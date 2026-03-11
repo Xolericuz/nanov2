@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>XOLERIC X-CLASS Quantum Pro</title>
+    <meta name="description" content="Ultra‑dark glass puzzle game with quantum pathfinding. Installable PWA, offline ready, zero distraction design.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <!-- Open Graph -->
+    <meta property="og:title" content="XOLERIC X-CLASS Quantum Pro">
+    <meta property="og:description" content="Enter the quantum glass puzzle.">
+    <meta property="og:image" content="icons/og-image.jpg">
+    <meta property="og:url" content="https://xoleric.com">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="XOLERIC X-CLASS Quantum Pro">
+    <meta name="twitter:description" content="Ultra‑dark glass puzzle game.">
+    <meta name="twitter:image" content="icons/twitter-card.jpg">
+    <!-- Preload critical assets -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="script.js" as="script">
+</head>
+<body>
+    <!-- BOOT SCREEN (splash) -->
+    <div id="boot-screen" class="screen active">
+        <div class="logo glass">XOLERIC</div>
+        <div class="login-panel glass">
+            <input type="text" id="playerName" placeholder="ENTER DESIGNATION" maxlength="20" value="OPERATOR" autocomplete="off">
+            <button id="startGame" class="glass">START SESSION</button>
+            <button id="installPwa" class="glass" style="display: none;">INSTALL APP</button>
+        </div>
+        <div class="version">QUANTUM PRO v2.0</div>
+        <div class="credits">DESIGNED IN THE VOID</div>
+    </div>
+
+    <!-- GAME SCREEN (asosiy o‘yin) -->
+    <div id="game-screen" class="screen">
+        <div id="game">
+            <!-- Grid -->
+            <div id="grid"></div>
+            <!-- SVG chiziqlar uchun -->
+            <svg id="pathLayer" xmlns="http://www.w3.org/2000/svg"></svg>
+            <!-- Pastki dock -->
+            <div id="miniDock" class="glass">
+                <div class="playerBox">
+                    <span id="playerNameDisplay">OPERATOR</span>
+                </div>
+                <div class="stats">
+                    <span id="levelDisplay">LVL 1</span>
+                    <span id="scoreDisplay">0</span>
+                    <span id="comboDisplay">x1</span>
+                </div>
+                <div class="controls">
+                    <button id="shuffleBtn" class="glass" title="Shuffle">⟳</button>
+                    <button id="hintBtn" class="glass" title="Hint">?</button>
+                    <button id="exitBtn" class="glass" title="Exit">⏻</button>
+                </div>
+            </div>
+            <!-- Yuqori o‘ng info (ixtiyoriy) -->
+            <div id="topInfo" class="glass">
+                <span id="highScoreDisplay">🏆 0</span>
+                <span id="timerDisplay">⏱️ 00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS PANEL (modal) -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal glass">
+            <h2>⚙️ SETTINGS</h2>
+            <div class="settings-content">
+                <label><input type="checkbox" id="soundCheck" checked> Sound FX</label>
+                <label><input type="checkbox" id="musicCheck" checked> Ambient Music</label>
+                <label><input type="checkbox" id="hapticCheck"> Haptic Feedback</label>
+                <label>Difficulty:
+                    <select id="difficultySelect">
+                        <option value="easy">Easy</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </label>
+                <button id="resetStats" class="glass">RESET STATISTICS</button>
+                <button id="clearSave" class="glass">CLEAR SAVE</button>
+            </div>
+            <button id="settingsClose" class="glass">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- STATISTICS PANEL -->
+    <div id="stats-modal" class="modal-overlay">
+        <div class="modal glass">
+            <h2>📊 STATISTICS</h2>
+            <div class="stats-detail">
+                <p>Total matches: <span id="statMatches">0</span></p>
+                <p>Total score: <span id="statScore">0</span></p>
+                <p>Highest level: <span id="statLevel">0</span></p>
+                <p>Max combo: <span id="statCombo">0</span></p>
+                <p>Play time: <span id="statTime">0h 0m</span></p>
+            </div>
+            <button id="statsClose" class="glass">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- ACHIEVEMENTS PANEL -->
+    <div id="achievements-modal" class="modal-overlay">
+        <div class="modal glass">
+            <h2>🏅 ACHIEVEMENTS</h2>
+            <div class="achievements-list">
+                <div class="achievement locked">🔒 First blood</div>
+                <div class="achievement locked">🔒 Combo master</div>
+                <div class="achievement locked">🔒 Speed run</div>
+                <div class="achievement locked">🔒 Perfectionist</div>
+            </div>
+            <button id="achievementsClose" class="glass">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- DAILY CHALLENGE PANEL -->
+    <div id="daily-modal" class="modal-overlay">
+        <div class="modal glass">
+            <h2>📅 DAILY CHALLENGE</h2>
+            <div class="daily-content">
+                <p>Today's challenge: <span id="challengeDesc">Clear 10 pairs in 2 minutes</span></p>
+                <p>Reward: <span id="challengeReward">500 points</span></p>
+                <progress id="challengeProgress" value="0" max="10"></progress>
+            </div>
+            <button id="dailyClose" class="glass">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- TUTORIAL OVERLAY (birinchi marta kirganda) -->
+    <div id="tutorial-overlay" class="modal-overlay">
+        <div class="modal glass tutorial">
+            <h2>🔮 WELCOME, OPERATOR</h2>
+            <p>• Tap two matching emojis to connect them.</p>
+            <p>• Path can have at most two turns.</p>
+            <p>• Build combo by consecutive matches.</p>
+            <p>• Level up by clearing all tiles.</p>
+            <button id="tutorialClose" class="glass">ENTER THE VOID</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION (vaqtinchalik xabarlar) -->
+    <div id="toast" class="toast glass">Message</div>
+
+    <!-- LOADING SPINNER -->
+    <div id="loading" class="loading-spinner"></div>
+
+    <!-- SERVICE WORKER REGISTRATION -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW registered:', reg);
+                }).catch(err => console.log('SW failed:', err));
+            });
+        }
+
+        // PWA install prompt
+        window.deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            document.getElementById('installPwa').style.display = 'block';
+        });
+    </script>
+    <!-- Asosiy JS -->
+    <script src="script.js"></script>
+</body>
+</html>
